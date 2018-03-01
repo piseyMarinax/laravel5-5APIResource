@@ -9,6 +9,7 @@ use App\Http\Resources\Article as ArticleResource;
 
 class ArticleController extends Controller
 {
+    
     /**
      * Display a listing of the resource.
      *
@@ -16,8 +17,9 @@ class ArticleController extends Controller
      */
     public function index()
     {
+        $pageNumber = 5;
         //Get articles
-        $articles = Article::paginate(15);
+        $articles = Article::orderBy('created_at','desc')->paginate($pageNumber);
 
         // Return collection of article as a resource
         return ArticleResource::collection($articles);
