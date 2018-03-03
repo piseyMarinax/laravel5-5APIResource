@@ -1,6 +1,11 @@
 <template>
     <div>
         <h2>Articles</h2>
+        <form @submit.prevent="addArticle" class="mb-3" >
+            <input type="text" name="title" id="title" class="form-control" placeholder="Title" v-model="article.title">
+            <textarea name="body" id="body" class="form-control" rows="3" placeholder="body" v-model="article.body" ></textarea>
+            <button type="submit" class="btn btn-light btn-block"> Save </button>
+        </form>
         <nav aria-label="Page navigation example">
         <ul class="pagination">
             <li v-bind:class="[{disabled: !pagination.prev_page_url }]" class="page-item"><a class="page-link" href="#" 
@@ -19,6 +24,7 @@
             <h3>{{ article.title}}</h3>
             <h3>{{ article.body}}</h3>
             <hr>
+            <button @click="editArticle(article)" class="btn btn-warning mb-1"> Edit </button>
             <button @click="deleteArticle(article.id)" class="btn btn-danger"> Delete </button>
 
         </div>
@@ -79,6 +85,52 @@
                     })
                     .catch(err => console.log(err));
                 }
+            },
+            addArticle()
+            {
+                if(this.edit === false)
+                {
+                    //add
+                    fetch('api/article',{
+                        method: 'post',
+                        body: JSON.stringify(this.article),
+                        headers:{
+                            'content-type': 'application/json'
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data =>{
+                        this.article.title = '';
+                        this.article.body = '';
+                        alert('Article Added');
+                        this.fetchArticles();
+                    })
+                }
+                else{
+                    //update
+                    fetch('api/article',{
+                        method: 'put',
+                        body: JSON.stringify(this.article),
+                        headers:{
+                            'content-type': 'application/json'
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data =>{
+                        this.article.title = '';
+                        this.article.body = '';
+                        alert('Article update');
+                        this.fetchArticles();
+                    })
+
+                }
+            },
+            editArticle(article){
+                this.edit = true;
+                this.article.id = article.id;
+                this.article.article_id = article.id; 
+                this.article.title = article.title;
+                this.article.body = article.body;
             }
         }
     }
